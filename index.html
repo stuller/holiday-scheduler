@@ -1,0 +1,1829 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f5ef" />
+    <title>Holiday On-Call Draw</title>
+    <style>
+      @font-face {
+        font-family: "DSG Sans Black";
+        src: url("assets/DSGSans-Black.woff") format("woff");
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+      }
+
+      :root {
+        color-scheme: light;
+        --paper: #f6f5ef;
+        --ink: #202a26;
+        --muted: #6b7770;
+        --line: #dce1d8;
+        --green: #006554;
+        --green-dark: #006554;
+        --green-soft: #e7eee8;
+        --red: #a33e3e;
+        --white: #fffefa;
+        --serif: Georgia, "Times New Roman", serif;
+        --sans: "Trebuchet MS", "Lucida Sans Unicode", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        position: relative;
+        isolation: isolate;
+        margin: 0;
+        min-width: 320px;
+        min-height: 100vh;
+        color: var(--ink);
+        background-color: var(--paper);
+        background-image: radial-gradient(#cfd8ce 0.7px, transparent 0.7px);
+        background-size: 19px 19px;
+        font-family: var(--sans);
+      }
+      body::before {
+        position: fixed;
+        z-index: -1;
+        inset: 0;
+        background-image: url("assets/sweater.png");
+        background-repeat: no-repeat;
+        background-position: calc(50% - 60px) -164px;
+        background-size: 126.5vw auto;
+        mix-blend-mode: multiply;
+        opacity: 0.2;
+        pointer-events: none;
+        content: "";
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:focus-visible,
+      input:focus-visible {
+        outline: 3px solid #bc7962;
+        outline-offset: 3px;
+      }
+
+      .page {
+        width: min(1050px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 38px 0 48px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 25px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand-mark {
+        display: block;
+        width: 104px;
+        height: auto;
+        aspect-ratio: 117 / 48;
+        flex: 0 0 auto;
+      }
+      .brand-name {
+        font-family: "DSG Sans Black", var(--sans);
+        font-size: 19px;
+        font-weight: 700;
+      }
+      main {
+        padding-top: 40px;
+      }
+      .intro {
+        margin-bottom: 50px;
+      }
+      h1 {
+        margin: 0;
+        font-family: "DSG Sans Black", var(--sans);
+        font-size: clamp(34px, 5vw, 48px);
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .lede {
+        max-width: 540px;
+        margin: 11px 0 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: minmax(270px, 0.85fr) minmax(360px, 1.15fr);
+        gap: 20px;
+        align-items: stretch;
+      }
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: var(--white);
+      }
+      .roster {
+        padding: 23px;
+      }
+      .panel-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      h2 {
+        margin: 0;
+        font-family: "DSG Sans Black", var(--sans);
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .count {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .add-form {
+        display: flex;
+        gap: 8px;
+        margin: 18px 0 17px;
+      }
+      input {
+        width: 100%;
+        min-width: 0;
+        height: 42px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        color: var(--ink);
+        background: #fff;
+      }
+      input::placeholder {
+        color: #8a938c;
+      }
+      .add-button {
+        flex: 0 0 auto;
+        height: 42px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 4px;
+        color: #fff;
+        background: var(--green);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .add-button:hover {
+        background: var(--green-dark);
+      }
+      .employee-list {
+        display: grid;
+        gap: 1px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .employee {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        min-height: 48px;
+        border-top: 1px solid #edf0ea;
+      }
+      .employee-name {
+        overflow-wrap: anywhere;
+        font-size: 14px;
+        text-transform: uppercase;
+      }
+      .employee-identity {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 8px;
+      }
+      .selection-count {
+        flex: 0 0 auto;
+        padding: 3px 7px;
+        border-radius: 4px;
+        color: var(--green);
+        background: var(--green-soft);
+        font-size: 10px;
+        white-space: nowrap;
+      }
+      .employee-detail {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .employee-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--green);
+        font-size: 11px;
+        white-space: nowrap;
+      }
+      .employee-status::before {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        content: "";
+      }
+      .employee-status.selected {
+        color: #8a918b;
+      }
+      .employee-status.selected::before {
+        background: #aab1aa;
+      }
+      .remove-button {
+        flex: 0 0 auto;
+        padding: 5px 0 5px 7px;
+        border: 0;
+        color: #8a918b;
+        background: transparent;
+        font-size: 11px;
+      }
+      .remove-button:hover {
+        color: var(--red);
+      }
+      .empty-roster {
+        padding: 17px 0 4px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .schedule-panel {
+        margin-top: 24px;
+        padding: 23px;
+      }
+      .schedule-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      .markdown-button {
+        padding: 7px 10px;
+        border: 1px solid var(--green);
+        border-radius: 4px;
+        color: var(--green);
+        background: transparent;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .markdown-button:hover:not(:disabled) {
+        background: var(--green-soft);
+      }
+      .markdown-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
+      .markdown-export {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+      }
+      .markdown-export[hidden] {
+        display: none;
+      }
+      .markdown-export-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .markdown-export-heading h3 {
+        margin: 0;
+        font-family: "DSG Sans Black", var(--sans);
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .markdown-output {
+        display: block;
+        width: 100%;
+        min-height: 220px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        color: var(--ink);
+        background: #f8f9f5;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        resize: vertical;
+      }
+      .markdown-status {
+        display: block;
+        min-height: 18px;
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .clear-button {
+        padding: 6px 0;
+        border: 0;
+        color: var(--red);
+        background: transparent;
+        font-size: 12px;
+      }
+      .clear-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
+      .schedule-scroll {
+        margin-top: 17px;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+      }
+      .schedule-table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: collapse;
+        background: var(--white);
+      }
+      .schedule-table th,
+      .schedule-table td {
+        padding: 13px 15px;
+        border-bottom: 1px solid #edf0ea;
+        font-size: 12px;
+        text-align: left;
+      }
+      .schedule-table thead th {
+        color: var(--green-dark);
+        background: var(--green-soft);
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .schedule-table tbody tr:last-child th,
+      .schedule-table tbody tr:last-child td {
+        border-bottom: 0;
+      }
+      .schedule-table tbody th {
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .schedule-table tbody td {
+        position: relative;
+      }
+      .schedule-table .monitoring-type {
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .schedule-table .assigned-name {
+        color: var(--green);
+        font-weight: 700;
+      }
+      .slot-assignees {
+        display: grid;
+        gap: 4px;
+        margin-bottom: 7px;
+      }
+      .slot-assignee {
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+      }
+      .slot-editor {
+        display: grid;
+        min-width: 115px;
+        gap: 7px;
+      }
+      .slot-editor label {
+        display: grid;
+        gap: 3px;
+        color: var(--muted);
+        font-size: 10px;
+        text-transform: uppercase;
+      }
+      .slot-editor select {
+        width: 100%;
+        min-width: 0;
+        min-height: 30px;
+        padding: 4px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        color: var(--ink);
+        background: var(--white);
+        font-size: 11px;
+        text-transform: none;
+      }
+      .slot-editor-actions {
+        display: flex;
+        gap: 5px;
+      }
+      .slot-editor-actions .slot-choice {
+        flex: 1;
+      }
+      .holiday-confetti-burst {
+        position: absolute;
+        z-index: 2;
+        inset: 0;
+        overflow: visible;
+        pointer-events: none;
+      }
+      .holiday-confetti-piece {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: var(--confetti-size, 7px);
+        height: calc(var(--confetti-size, 7px) * 1.55);
+        border-radius: 2px;
+        background: var(--confetti-color);
+        opacity: 0;
+        animation: holiday-confetti-burst var(--confetti-duration, 900ms)
+          cubic-bezier(0.16, 0.84, 0.44, 1) var(--confetti-delay) both;
+      }
+      @keyframes holiday-confetti-burst {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
+        }
+        18% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate(
+              calc(-50% + var(--confetti-x)),
+              calc(-50% + var(--confetti-y))
+            )
+            scale(0.8) rotate(var(--confetti-rotation));
+        }
+      }
+      .holiday-snowfall {
+        position: absolute;
+        z-index: 3;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .holiday-snowflake {
+        position: absolute;
+        top: -28px;
+        color: #f7fbff;
+        line-height: 1;
+        opacity: 0;
+        text-shadow: 0 0 8px rgb(255 255 255 / 55%);
+        animation-name: holiday-snowfall;
+        animation-timing-function: ease-in;
+        animation-fill-mode: both;
+      }
+      @keyframes holiday-snowfall {
+        0% {
+          opacity: 0;
+          transform: translate3d(0, -24px, 0) rotate(0deg) scale(0.6);
+        }
+        12% {
+          opacity: 0.85;
+        }
+        100% {
+          opacity: 0;
+          transform: translate3d(var(--snow-drift), var(--snow-distance), 0)
+            rotate(360deg) scale(1);
+        }
+      }
+      .slot-role {
+        color: var(--muted);
+        font-size: 10px;
+        white-space: nowrap;
+        text-transform: uppercase;
+      }
+      .slot-choice,
+      .skip-button {
+        min-height: 30px;
+        padding: 5px 8px;
+        border: 1px solid #9aafa3;
+        border-radius: 4px;
+        color: var(--green-dark);
+        background: var(--white);
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .slot-choice:hover:not(:disabled),
+      .skip-button:hover {
+        background: var(--green-soft);
+      }
+      .slot-choice:disabled {
+        cursor: not-allowed;
+        color: var(--muted);
+        opacity: 0.65;
+      }
+      .skip-button {
+        color: #f7f6ef;
+        border-color: #779287;
+        background: transparent;
+      }
+
+      .draw-panel {
+        position: relative;
+        display: flex;
+        min-height: 380px;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+        padding: 26px;
+        color: #f7f6ef;
+        border-color: var(--green-dark);
+        background: var(--green-dark);
+      }
+      .draw-panel::after {
+        position: absolute;
+        right: -72px;
+        bottom: 55px;
+        width: 230px;
+        height: 230px;
+        border: 1px solid rgb(255 255 255 / 10%);
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 20px rgb(255 255 255 / 3%),
+          0 0 0 40px rgb(255 255 255 / 3%);
+        content: "";
+        pointer-events: none;
+      }
+      .round-label {
+        color: #b9c9bd;
+        font-family: "DSG Sans Black", var(--sans);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .draw-content {
+        position: relative;
+        z-index: 1;
+        padding: 28px 0;
+      }
+      .result-label {
+        margin: 0 0 9px;
+        color: #bdcfc2;
+        font-size: 13px;
+      }
+      .result-name {
+        min-height: 1.2em;
+        margin: 0;
+        font-family: "DSG Sans Black", var(--sans);
+        font-size: clamp(35px, 5vw, 53px);
+        font-weight: 700;
+        line-height: 1.13;
+        overflow-wrap: anywhere;
+        text-transform: uppercase;
+      }
+      .result-hint {
+        margin: 14px 0 0;
+        color: #c5d2c8;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .draw-footer {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .draw-button {
+        min-height: 46px;
+        padding: 0 19px;
+        border: 0;
+        border-radius: 4px;
+        color: var(--green-dark);
+        background: #f2f0e5;
+        font-weight: 700;
+      }
+      .draw-button:hover:not(:disabled) {
+        background: #fffefa;
+      }
+      .draw-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.48;
+      }
+      .turns-left {
+        color: #c5d2c8;
+        font-size: 12px;
+        text-align: right;
+      }
+
+      .notice {
+        display: block;
+        min-height: 20px;
+        margin: 13px 0 0;
+        color: var(--red);
+        font-size: 12px;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (max-width: 720px) {
+        body::before {
+          background-position: right -100px;
+          background-size: 94.875vw auto;
+          opacity: 0.09;
+        }
+        .page {
+          width: min(560px, calc(100% - 28px));
+          padding-top: 23px;
+        }
+        main {
+          padding-top: 30px;
+        }
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+        .draw-panel {
+          min-height: 320px;
+          order: -1;
+        }
+        .roster {
+          padding: 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .panel {
+          animation: arrive 420ms ease-out both;
+        }
+        .roster {
+          animation-delay: 70ms;
+        }
+        @keyframes arrive {
+          from {
+            opacity: 0;
+            transform: translateY(7px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="brand">
+          <img
+            class="brand-mark"
+            src="assets/dsg-logo.svg"
+            alt="DICK'S Sporting Goods logo"
+          />
+          <span class="brand-name">Holiday On-Call</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <h1 id="page-title">Holiday coverage, sorted.</h1>
+          <p class="lede">
+            Draw one person at a time, then let them choose an open shift.
+            Everyone gets a turn before the next round begins.
+          </p>
+        </section>
+
+        <div class="workspace">
+          <section class="panel roster" aria-labelledby="roster-title">
+            <div class="panel-heading">
+              <h2 id="roster-title">Your team</h2>
+              <span class="count" id="employee-count">0 people</span>
+            </div>
+            <form class="add-form" id="add-form">
+              <label class="sr-only" for="employee-input">Teammate name</label>
+              <input
+                id="employee-input"
+                name="employee"
+                type="text"
+                maxlength="60"
+                placeholder="Add a teammate"
+                autocomplete="off"
+              />
+              <button class="add-button" type="submit">Add</button>
+            </form>
+            <ul
+              class="employee-list"
+              id="employee-list"
+              aria-live="polite"
+            ></ul>
+            <p class="empty-roster" id="empty-roster">
+              Your roster is empty. Add the people who will share holiday
+              coverage.
+            </p>
+            <output class="notice" id="notice" aria-live="polite"></output>
+            <button
+              class="clear-button"
+              id="reset-employees-button"
+              type="button"
+            >
+              Reset teammate list
+            </button>
+          </section>
+
+          <section class="panel draw-panel" aria-labelledby="draw-title">
+            <div class="round-label" id="round-label">Round 1</div>
+            <div class="draw-content" aria-live="polite">
+              <p class="result-label" id="draw-title">Up next</p>
+              <p class="result-name" id="result-name">Ready when you are</p>
+              <p class="result-hint" id="result-hint">
+                Add your team to get started.
+              </p>
+            </div>
+            <div class="draw-footer">
+              <button
+                class="draw-button"
+                id="draw-button"
+                type="button"
+                disabled
+              >
+                Pick next teammate
+              </button>
+              <button class="skip-button" id="skip-button" type="button" hidden>
+                Skip assignment
+              </button>
+              <span class="turns-left" id="turns-left">0 turns taken</span>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel schedule-panel" aria-labelledby="schedule-title">
+          <div class="panel-heading">
+            <h2 id="schedule-title">Holiday schedule</h2>
+            <div class="schedule-actions">
+              <span class="count" id="schedule-count">0 of 15 shifts</span>
+              <button
+                class="markdown-button"
+                id="generate-markdown-button"
+                type="button"
+                disabled
+              >
+                Generate Markdown
+              </button>
+              <button
+                class="clear-button"
+                id="reset-calendar-rounds-button"
+                type="button"
+              >
+                Reset calendar &amp; rounds
+              </button>
+              <button class="clear-button" id="reset-both-button" type="button">
+                Reset both
+              </button>
+            </div>
+          </div>
+          <section class="schedule-scroll" aria-label="Holiday schedule table">
+            <table class="schedule-table">
+              <caption class="sr-only">
+                Holiday on-call assignments by day and shift
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Monitoring type</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">12AM-8AM</th>
+                  <th scope="col">8AM-4:00PM</th>
+                  <th scope="col">4:00PM-12AM</th>
+                </tr>
+              </thead>
+              <tbody id="schedule-body"></tbody>
+            </table>
+          </section>
+          <section
+            class="markdown-export"
+            id="markdown-export"
+            aria-labelledby="markdown-export-title"
+            hidden
+          >
+            <div class="markdown-export-heading">
+              <h3 id="markdown-export-title">Markdown export</h3>
+              <button
+                class="markdown-button"
+                id="copy-markdown-button"
+                type="button"
+                disabled
+              >
+                Copy Markdown
+              </button>
+            </div>
+            <textarea
+              class="markdown-output"
+              id="markdown-output"
+              aria-label="Generated schedule Markdown"
+              readonly
+              spellcheck="false"
+            ></textarea>
+            <output
+              class="markdown-status"
+              id="markdown-status"
+              aria-live="polite"
+            ></output>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const STORAGE_KEY = "holiday-on-call-state-v1";
+      const CURRENT_YEAR = new Date().getFullYear();
+      const LEGACY_SCHEDULE_YEAR = 2026;
+      function getThanksgivingDate(year) {
+        const novemberFirst = new Date(year, 10, 1);
+        const daysUntilThursday = (4 - novemberFirst.getDay() + 7) % 7;
+        return new Date(year, 10, 1 + daysUntilThursday + 21);
+      }
+
+      function getScheduleDays(year) {
+        const thanksgiving = getThanksgivingDate(year);
+        const dateFormatter = new Intl.DateTimeFormat("en-US", {
+          weekday: "long",
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+        return Array.from({ length: 5 }, (_, dayOffset) => {
+          const date = new Date(thanksgiving);
+          date.setDate(date.getDate() + dayOffset);
+          return dateFormatter.format(date);
+        });
+      }
+
+      const SCHEDULE_DAYS = getScheduleDays(CURRENT_YEAR);
+      const SHIFT_LABELS = ["12AM-8AM", "8AM-4:00PM", "4:00PM-12AM"];
+      const SCHEDULE_SLOT_COUNT = SCHEDULE_DAYS.length * SHIFT_LABELS.length;
+      const MAX_NAMES_PER_SLOT = 2;
+      const SCHEDULE_ASSIGNMENT_COUNT =
+        SCHEDULE_SLOT_COUNT * MAX_NAMES_PER_SLOT;
+      const elements = {
+        form: document.querySelector("#add-form"),
+        input: document.querySelector("#employee-input"),
+        list: document.querySelector("#employee-list"),
+        empty: document.querySelector("#empty-roster"),
+        count: document.querySelector("#employee-count"),
+        notice: document.querySelector("#notice"),
+        round: document.querySelector("#round-label"),
+        result: document.querySelector("#result-name"),
+        resultLabel: document.querySelector("#draw-title"),
+        drawContent: document.querySelector(".draw-content"),
+        hint: document.querySelector("#result-hint"),
+        button: document.querySelector("#draw-button"),
+        skipButton: document.querySelector("#skip-button"),
+        turns: document.querySelector("#turns-left"),
+        scheduleBody: document.querySelector("#schedule-body"),
+        scheduleCount: document.querySelector("#schedule-count"),
+        resetEmployeesButton: document.querySelector("#reset-employees-button"),
+        resetCalendarRoundsButton: document.querySelector(
+          "#reset-calendar-rounds-button",
+        ),
+        resetBothButton: document.querySelector("#reset-both-button"),
+        generateMarkdownButton: document.querySelector(
+          "#generate-markdown-button",
+        ),
+        markdownExport: document.querySelector("#markdown-export"),
+        markdownOutput: document.querySelector("#markdown-output"),
+        copyMarkdownButton: document.querySelector("#copy-markdown-button"),
+        markdownStatus: document.querySelector("#markdown-status"),
+      };
+
+      function normalizeSelectionCount(person, selectedIds) {
+        if (
+          Number.isInteger(person.selectedCount) &&
+          person.selectedCount >= 0
+        ) {
+          return person.selectedCount;
+        }
+        return selectedIds.includes(person.id) ? 1 : 0;
+      }
+
+      function createEmptySchedule() {
+        return Array.from({ length: SCHEDULE_SLOT_COUNT }, () => []);
+      }
+
+      function normalizeScheduleSlot(savedSlot, employeesById) {
+        let savedAssignees = [];
+        if (Array.isArray(savedSlot)) {
+          savedAssignees = savedSlot;
+        } else if (typeof savedSlot === "string") {
+          savedAssignees = [savedSlot];
+        }
+        const assignees = [];
+        for (const savedAssignee of savedAssignees) {
+          if (typeof savedAssignee === "string") {
+            const employee = employeesById.get(savedAssignee);
+            if (employee) {
+              assignees.push({ id: employee.id, name: employee.name });
+            }
+          } else if (
+            savedAssignee &&
+            typeof savedAssignee.id === "string" &&
+            typeof savedAssignee.name === "string"
+          ) {
+            assignees.push({
+              id: savedAssignee.id,
+              name: savedAssignee.name,
+            });
+          }
+        }
+        return [
+          ...new Map(assignees.map((person) => [person.id, person])).values(),
+        ].slice(0, MAX_NAMES_PER_SLOT);
+      }
+
+      function normalizeSchedule(savedSchedule, employees) {
+        if (!Array.isArray(savedSchedule)) {
+          return { slots: createEmptySchedule(), hasPendingSelection: false };
+        }
+        const employeesById = new Map(
+          employees.map((employee) => [employee.id, employee]),
+        );
+        return {
+          slots: Array.from({ length: SCHEDULE_SLOT_COUNT }, (_, index) =>
+            normalizeScheduleSlot(savedSchedule[index], employeesById),
+          ),
+          hasPendingSelection: savedSchedule.some(Array.isArray),
+        };
+      }
+
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (!saved || !Array.isArray(saved.employees)) {
+            return createInitialState();
+          }
+
+          const savedSelectedIds = Array.isArray(saved.selectedIds)
+            ? [
+                ...new Set(
+                  saved.selectedIds.filter((id) => typeof id === "string"),
+                ),
+              ]
+            : [];
+          const employees = saved.employees
+            .filter(
+              (person) =>
+                person &&
+                typeof person.id === "string" &&
+                typeof person.name === "string",
+            )
+            .map((person) => ({
+              ...person,
+              selectedCount: normalizeSelectionCount(person, savedSelectedIds),
+            }));
+          const employeeIds = new Set(employees.map((person) => person.id));
+          const savedScheduleYear = Number.isInteger(saved.scheduleYear)
+            ? saved.scheduleYear
+            : LEGACY_SCHEDULE_YEAR;
+          if (savedScheduleYear !== CURRENT_YEAR) {
+            return {
+              employees,
+              selectedIds: [],
+              schedule: createEmptySchedule(),
+              round: 1,
+              currentId: null,
+              scheduleYear: CURRENT_YEAR,
+            };
+          }
+          const { slots, hasPendingSelection } = normalizeSchedule(
+            saved.schedule,
+            employees,
+          );
+          return {
+            employees,
+            selectedIds: savedSelectedIds.filter((id) => employeeIds.has(id)),
+            schedule: slots,
+            round:
+              Number.isInteger(saved.round) && saved.round > 0
+                ? saved.round
+                : 1,
+            currentId:
+              hasPendingSelection && employeeIds.has(saved.currentId)
+                ? saved.currentId
+                : null,
+            scheduleYear: CURRENT_YEAR,
+          };
+        } catch {
+          return createInitialState();
+        }
+      }
+
+      function createInitialState() {
+        return {
+          employees: [],
+          selectedIds: [],
+          schedule: createEmptySchedule(),
+          round: 1,
+          currentId: null,
+          scheduleYear: CURRENT_YEAR,
+        };
+      }
+
+      const state = loadState();
+      let editingSlotIndex = null;
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch {
+          elements.notice.textContent =
+            "Progress could not be saved in this browser.";
+        }
+      }
+
+      function formatCount(count, singular, plural) {
+        return `${count} ${count === 1 ? singular : plural}`;
+      }
+
+      function renderRoster(selected) {
+        elements.list.replaceChildren();
+
+        for (const person of state.employees) {
+          const item = document.createElement("li");
+          item.className = "employee";
+          const name = document.createElement("span");
+          name.className = "employee-name";
+          name.textContent = person.name;
+          const identity = document.createElement("span");
+          identity.className = "employee-identity";
+          const selectionCount = document.createElement("span");
+          selectionCount.className = "selection-count";
+          selectionCount.textContent = `${person.selectedCount} ${person.selectedCount === 1 ? "pick" : "picks"}`;
+          selectionCount.setAttribute(
+            "aria-label",
+            `Selected ${person.selectedCount} ${person.selectedCount === 1 ? "time" : "times"}`,
+          );
+          identity.append(name, selectionCount);
+          const status = document.createElement("span");
+          status.className = `employee-status${selected.has(person.id) ? " selected" : ""}`;
+          status.textContent = selected.has(person.id)
+            ? "Selected"
+            : "Available";
+          const remove = document.createElement("button");
+          remove.className = "remove-button";
+          remove.type = "button";
+          remove.textContent = "Remove";
+          remove.setAttribute("aria-label", `Remove ${person.name}`);
+          remove.addEventListener("click", () => removeEmployee(person.id));
+          const detail = document.createElement("span");
+          detail.className = "employee-detail";
+          detail.append(status, remove);
+          item.append(identity, detail);
+          elements.list.append(item);
+        }
+
+        elements.empty.hidden = state.employees.length > 0;
+        elements.count.textContent = formatCount(
+          state.employees.length,
+          "person",
+          "people",
+        );
+      }
+
+      function renderSchedule(current) {
+        const allPrimarySlotsFilled = state.schedule.every(
+          (slot) => slot.length > 0,
+        );
+        const assignedCount = state.schedule.reduce(
+          (total, slot) => total + slot.length,
+          0,
+        );
+        elements.scheduleCount.textContent = `${assignedCount} of ${SCHEDULE_ASSIGNMENT_COUNT} spots filled`;
+        elements.generateMarkdownButton.disabled = assignedCount === 0;
+        elements.scheduleBody.replaceChildren();
+        const currentHasOpenSlot = Boolean(
+          current &&
+          state.schedule.some(
+            (slot) =>
+              slot.length < MAX_NAMES_PER_SLOT &&
+              !slot.some((person) => person.id === current.id),
+          ),
+        );
+
+        SCHEDULE_DAYS.forEach((date, dayIndex) => {
+          const row = document.createElement("tr");
+          const monitoringType = document.createElement("td");
+          monitoringType.className = "monitoring-type";
+          monitoringType.textContent = "Eyes off Glass";
+          const dateCell = document.createElement("th");
+          dateCell.scope = "row";
+          dateCell.textContent = date;
+          row.append(monitoringType, dateCell);
+
+          SHIFT_LABELS.forEach((_, shiftIndex) => {
+            const cell = document.createElement("td");
+            const slotIndex = dayIndex * SHIFT_LABELS.length + shiftIndex;
+            const assignees = state.schedule[slotIndex];
+            renderScheduleCell(
+              cell,
+              slotIndex,
+              assignees,
+              current,
+              allPrimarySlotsFilled,
+              date,
+              SHIFT_LABELS[shiftIndex],
+            );
+            row.append(cell);
+          });
+
+          elements.scheduleBody.append(row);
+        });
+
+        elements.skipButton.hidden = !current || currentHasOpenSlot;
+      }
+
+      function renderScheduleCell(
+        cell,
+        slotIndex,
+        assignees,
+        current,
+        allPrimarySlotsFilled,
+        date,
+        shiftLabel,
+      ) {
+        if (editingSlotIndex === slotIndex) {
+          renderSlotEditor(cell, slotIndex, assignees, allPrimarySlotsFilled);
+          return;
+        }
+
+        const names = document.createElement("div");
+        names.className = "slot-assignees";
+        assignees.forEach((person, assigneeIndex) => {
+          const assignment = document.createElement("span");
+          assignment.className = "slot-assignee";
+          const role = document.createElement("span");
+          role.className = "slot-role";
+          role.textContent = assigneeIndex === 0 ? "Primary" : "Secondary";
+          const name = document.createElement("span");
+          name.className = "assigned-name";
+          name.textContent = person.name;
+          assignment.setAttribute(
+            "aria-label",
+            `${role.textContent}: ${person.name}`,
+          );
+          assignment.append(role, name);
+          names.append(assignment);
+        });
+        cell.append(names);
+
+        if (current) {
+          renderSlotChoice(
+            cell,
+            slotIndex,
+            assignees,
+            current,
+            allPrimarySlotsFilled,
+            date,
+            shiftLabel,
+          );
+          return;
+        }
+        if (assignees.length === 0) return;
+
+        const edit = document.createElement("button");
+        edit.className = "slot-choice";
+        edit.type = "button";
+        edit.textContent = "Edit";
+        edit.setAttribute(
+          "aria-label",
+          `Edit assignments for ${date}, ${shiftLabel}`,
+        );
+        edit.addEventListener("click", () => {
+          editingSlotIndex = slotIndex;
+          render();
+        });
+        cell.append(edit);
+      }
+
+      function renderSlotChoice(
+        cell,
+        slotIndex,
+        assignees,
+        current,
+        allPrimarySlotsFilled,
+        date,
+        shiftLabel,
+      ) {
+        const alreadyAssigned = assignees.some(
+          (person) => person.id === current.id,
+        );
+        const hasCapacity = assignees.length < MAX_NAMES_PER_SLOT;
+        const isLockedSecondary =
+          assignees.length === 1 && !allPrimarySlotsFilled;
+        if (alreadyAssigned || !hasCapacity) return;
+
+        const choose = document.createElement("button");
+        choose.className = "slot-choice";
+        choose.type = "button";
+        choose.textContent = "Choose";
+        choose.disabled = isLockedSecondary;
+        const choiceRole = assignees.length === 0 ? "Primary" : "Secondary";
+        let choiceLabel = `Assign ${current.name} as ${choiceRole} for ${date}, ${shiftLabel}`;
+        if (isLockedSecondary) {
+          choiceLabel = `Secondary choice for ${date}, ${shiftLabel} is locked until all primary shifts are filled`;
+          choose.title = choiceLabel;
+        }
+        choose.setAttribute("aria-label", choiceLabel);
+        choose.addEventListener("click", () => assignCurrentToSlot(slotIndex));
+        cell.append(choose);
+      }
+
+      function createSlotSelect(people, selectedId, label) {
+        const select = document.createElement("select");
+        select.setAttribute("aria-label", label);
+        const unassigned = document.createElement("option");
+        unassigned.value = "";
+        unassigned.textContent = "Unassigned";
+        select.append(unassigned);
+        for (const person of people) {
+          const option = document.createElement("option");
+          option.value = person.id;
+          option.textContent = person.name;
+          select.append(option);
+        }
+        select.value = selectedId ?? "";
+        return select;
+      }
+
+      function renderSlotEditor(
+        cell,
+        slotIndex,
+        assignees,
+        allPrimarySlotsFilled,
+      ) {
+        const peopleById = new Map(
+          state.employees.map((person) => [person.id, person]),
+        );
+        for (const person of assignees) {
+          peopleById.set(person.id, person);
+        }
+        const people = [...peopleById.values()];
+        const primarySelect = createSlotSelect(
+          people,
+          assignees[0]?.id,
+          "Primary teammate",
+        );
+        let secondaryPeople = [];
+        if (allPrimarySlotsFilled) {
+          secondaryPeople = people;
+        } else if (assignees[1]) {
+          secondaryPeople = [assignees[1]];
+        }
+        const secondarySelect = createSlotSelect(
+          secondaryPeople,
+          assignees[1]?.id,
+          "Secondary teammate",
+        );
+        secondarySelect.disabled = !allPrimarySlotsFilled && !assignees[1];
+
+        const editor = document.createElement("div");
+        editor.className = "slot-editor";
+        const primaryLabel = document.createElement("label");
+        primaryLabel.textContent = "Primary";
+        primaryLabel.append(primarySelect);
+        const secondaryLabel = document.createElement("label");
+        secondaryLabel.textContent = "Secondary";
+        secondaryLabel.append(secondarySelect);
+        editor.append(primaryLabel, secondaryLabel);
+
+        const actions = document.createElement("div");
+        actions.className = "slot-editor-actions";
+        const save = document.createElement("button");
+        save.className = "slot-choice";
+        save.type = "button";
+        save.textContent = "Save";
+        save.addEventListener("click", () =>
+          saveSlotEdit(slotIndex, primarySelect.value, secondarySelect.value),
+        );
+        const cancel = document.createElement("button");
+        cancel.className = "slot-choice";
+        cancel.type = "button";
+        cancel.textContent = "Cancel";
+        cancel.addEventListener("click", () => {
+          editingSlotIndex = null;
+          render();
+        });
+        actions.append(save, cancel);
+        editor.append(actions);
+        cell.append(editor);
+      }
+
+      function saveSlotEdit(slotIndex, primaryId, secondaryId) {
+        const slot = state.schedule[slotIndex];
+        const peopleById = new Map(
+          state.employees.map((person) => [person.id, person]),
+        );
+        for (const person of slot) {
+          peopleById.set(person.id, person);
+        }
+        const primary = primaryId ? peopleById.get(primaryId) : null;
+        const secondary = secondaryId ? peopleById.get(secondaryId) : null;
+        if (secondary && !primary) {
+          elements.notice.textContent =
+            "Assign a Primary teammate before adding a Secondary.";
+          return;
+        }
+        if (primary && secondary && primary.id === secondary.id) {
+          elements.notice.textContent =
+            "A teammate cannot fill both roles in the same shift.";
+          return;
+        }
+        if (secondary && !slot[1]) {
+          const allPrimarySlotsFilled = state.schedule.every(
+            (scheduleSlot) => scheduleSlot.length > 0,
+          );
+          if (!allPrimarySlotsFilled) {
+            elements.notice.textContent =
+              "Fill every Primary slot before adding a Secondary.";
+            return;
+          }
+        }
+        const updatedSlot = [primary, secondary]
+          .filter(Boolean)
+          .map((person) => ({ id: person.id, name: person.name }));
+        updatePickCounts(slot, updatedSlot);
+        state.schedule[slotIndex] = updatedSlot;
+        editingSlotIndex = null;
+        invalidateMarkdownExport();
+        elements.notice.textContent = "";
+        saveState();
+        render();
+      }
+
+      function updatePickCounts(previousSlot, updatedSlot) {
+        const previousIds = new Set(previousSlot.map((person) => person.id));
+        const updatedIds = new Set(updatedSlot.map((person) => person.id));
+        for (const person of state.employees) {
+          const wasAssigned = previousIds.has(person.id);
+          const isAssigned = updatedIds.has(person.id);
+          if (wasAssigned && !isAssigned) {
+            person.selectedCount = Math.max(0, person.selectedCount - 1);
+          } else if (!wasAssigned && isAssigned) {
+            person.selectedCount += 1;
+            if (!state.selectedIds.includes(person.id)) {
+              state.selectedIds.push(person.id);
+            }
+          }
+        }
+      }
+
+      function renderDraw(current, remaining) {
+        const roundComplete = state.employees.length > 0 && remaining === 0;
+        const scheduleComplete = state.schedule.every(
+          (slot) => slot.length >= MAX_NAMES_PER_SLOT,
+        );
+        elements.round.textContent = `Round ${state.round}`;
+        elements.button.disabled =
+          state.employees.length === 0 || scheduleComplete || Boolean(current);
+        let buttonLabel = "Pick next teammate";
+        if (scheduleComplete) {
+          buttonLabel = "Schedule complete";
+        } else if (current) {
+          buttonLabel = "Choose a shift below";
+        } else if (roundComplete) {
+          buttonLabel = "Next round: pick teammate";
+        }
+        elements.button.textContent = buttonLabel;
+        elements.turns.textContent = `${formatCount(state.selectedIds.length, "turn", "turns")} taken`;
+
+        if (current) {
+          elements.resultLabel.textContent = "Choose a shift";
+          elements.result.textContent = current.name;
+          const hasOpenSlot = state.schedule.some(
+            (slot) =>
+              slot.length < MAX_NAMES_PER_SLOT &&
+              !slot.some((person) => person.id === current.id),
+          );
+          if (hasOpenSlot) {
+            elements.hint.textContent =
+              "Choose an open date and time slot in the schedule below.";
+          } else {
+            elements.hint.textContent =
+              "No available shifts remain for this teammate. Skip this assignment to continue.";
+          }
+          return;
+        }
+
+        elements.resultLabel.textContent = "Up next";
+        if (state.employees.length === 0) {
+          elements.result.textContent = "Ready when you are";
+          elements.hint.textContent = "Add your team to get started.";
+        } else if (scheduleComplete) {
+          elements.result.textContent = "Schedule complete";
+          elements.hint.textContent = "All holiday shifts have been assigned.";
+        } else if (roundComplete) {
+          elements.result.textContent = "Round complete";
+          elements.hint.textContent =
+            "Everyone has had a turn. Start the next round when you're ready.";
+        } else {
+          elements.result.textContent = "The draw is ready";
+          elements.hint.textContent = `${formatCount(remaining, "person is", "people are")} available this round.`;
+        }
+      }
+
+      function render() {
+        const selected = new Set(state.selectedIds);
+        const current = state.employees.find(
+          (person) => person.id === state.currentId,
+        );
+        const remaining = state.employees.length - selected.size;
+        renderRoster(selected);
+        renderDraw(current, remaining);
+        renderSchedule(current);
+      }
+
+      function removeEmployee(id) {
+        state.employees = state.employees.filter((person) => person.id !== id);
+        state.selectedIds = state.selectedIds.filter(
+          (selectedId) => selectedId !== id,
+        );
+        state.schedule = state.schedule.map((slot) =>
+          slot.filter((person) => person.id !== id),
+        );
+        if (state.currentId === id) state.currentId = null;
+        invalidateMarkdownExport();
+        elements.notice.textContent = "";
+        saveState();
+        render();
+      }
+
+      elements.form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const name = elements.input.value.trim();
+        if (!name) {
+          elements.notice.textContent =
+            "Enter a name to add someone to the roster.";
+          elements.input.focus();
+          return;
+        }
+        if (
+          state.employees.some(
+            (person) =>
+              person.name.toLocaleLowerCase() === name.toLocaleLowerCase(),
+          )
+        ) {
+          elements.notice.textContent = "That name is already on the roster.";
+          elements.input.focus();
+          return;
+        }
+        state.employees.push({
+          id: crypto.randomUUID(),
+          name,
+          selectedCount: 0,
+        });
+        elements.input.value = "";
+        elements.notice.textContent = "";
+        saveState();
+        render();
+        elements.input.focus();
+      });
+
+      elements.button.addEventListener("click", () => {
+        if (
+          state.employees.length === 0 ||
+          state.currentId ||
+          state.schedule.every((slot) => slot.length >= MAX_NAMES_PER_SLOT)
+        ) {
+          return;
+        }
+        if (state.selectedIds.length >= state.employees.length) {
+          state.selectedIds = [];
+          state.round += 1;
+        }
+        const selected = new Set(state.selectedIds);
+        const available = state.employees.filter(
+          (person) => !selected.has(person.id),
+        );
+        const lowestPickCount = Math.min(
+          ...available.map((person) => person.selectedCount),
+        );
+        const lowestPicked = available.filter(
+          (person) => person.selectedCount === lowestPickCount,
+        );
+        const pick =
+          lowestPicked[Math.floor(Math.random() * lowestPicked.length)];
+        state.selectedIds.push(pick.id);
+        pick.selectedCount += 1;
+        state.currentId = pick.id;
+        elements.notice.textContent = "";
+        saveState();
+        render();
+        celebratePick();
+      });
+
+      function assignCurrentToSlot(slotIndex) {
+        const person = state.employees.find(
+          (employee) => employee.id === state.currentId,
+        );
+        const slot = state.schedule[slotIndex];
+        if (
+          !person ||
+          !slot ||
+          slot.length >= MAX_NAMES_PER_SLOT ||
+          slot.includes(person.id)
+        ) {
+          return;
+        }
+        slot.push({ id: person.id, name: person.name });
+        state.currentId = null;
+        invalidateMarkdownExport();
+        elements.notice.textContent = "";
+        saveState();
+        render();
+        celebrateSlot(slotIndex);
+      }
+
+      function celebrateSlot(slotIndex) {
+        const rowIndex = Math.floor(slotIndex / SHIFT_LABELS.length);
+        const shiftIndex = slotIndex % SHIFT_LABELS.length;
+        const cell =
+          elements.scheduleBody.querySelectorAll("tr")[rowIndex]?.cells[
+            shiftIndex + 2
+          ];
+        if (!cell) return;
+        createHolidayConfetti(cell);
+      }
+
+      function celebratePick() {
+        if (globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          return;
+        }
+        elements.result
+          .getAnimations()
+          .forEach((animation) => animation.cancel());
+        const entryOffset =
+          globalThis.innerWidth + elements.result.getBoundingClientRect().width;
+        elements.result.animate(
+          [
+            {
+              opacity: 0,
+              transform: `translate(${entryOffset}px, -18px) rotate(-180deg) scale(5)`,
+              filter: "blur(8px)",
+              offset: 0,
+            },
+            {
+              opacity: 1,
+              transform: "translate(12px, 5px) rotate(7deg) scale(1.35)",
+              filter: "drop-shadow(0 0 16px rgb(198 154 66 / 90%))",
+              offset: 0.52,
+            },
+            {
+              opacity: 1,
+              transform: "translate(5px, -4px) rotate(-2deg) scale(1.08)",
+              filter: "drop-shadow(0 0 8px rgb(198 154 66 / 55%))",
+              offset: 0.82,
+            },
+            {
+              opacity: 1,
+              transform: "translate(0, 0) rotate(0deg) scale(1)",
+              filter: "blur(0)",
+            },
+          ],
+          {
+            duration: 1800,
+            easing: "cubic-bezier(0.16, 0.84, 0.44, 1)",
+          },
+        );
+        createHolidayConfetti(elements.drawContent, elements.result, {
+          pieceCount: 36,
+          spreadX: 340,
+          spreadY: 210,
+          pieceSize: 9,
+          duration: 1500,
+          delayStep: 16,
+        });
+        createHolidaySnowfall(elements.drawContent.parentElement);
+      }
+
+      function createHolidaySnowfall(container) {
+        if (globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          return;
+        }
+        const flakes = ["\u2744", "\u2745", "\u2746"];
+        const snowfall = document.createElement("span");
+        snowfall.className = "holiday-snowfall";
+        snowfall.setAttribute("aria-hidden", "true");
+        const fallDistance = container.clientHeight + 56;
+
+        for (let index = 0; index < 18; index += 1) {
+          const flake = document.createElement("span");
+          flake.className = "holiday-snowflake";
+          flake.textContent = flakes[index % flakes.length];
+          flake.style.left = `${Math.random() * 100}%`;
+          flake.style.fontSize = `${12 + Math.random() * 14}px`;
+          flake.style.animationDuration = `${1400 + Math.random() * 500}ms`;
+          flake.style.animationDelay = `${Math.random() * 250}ms`;
+          flake.style.setProperty(
+            "--snow-drift",
+            `${Math.round((Math.random() - 0.5) * 90)}px`,
+          );
+          flake.style.setProperty("--snow-distance", `${fallDistance}px`);
+          snowfall.append(flake);
+        }
+
+        container.append(snowfall);
+        globalThis.setTimeout(() => snowfall.remove(), 2200);
+      }
+
+      function createHolidayConfetti(container, anchor = null, options = {}) {
+        if (globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          return;
+        }
+        const {
+          pieceCount = 12,
+          spreadX = 112,
+          spreadY = 60,
+          pieceSize = 7,
+          duration = 900,
+          delayStep = 18,
+        } = options;
+        const colors = ["#245548", "#a33e3e", "#c69a42", "#fffefa"];
+        const burst = document.createElement("span");
+        burst.className = "holiday-confetti-burst";
+        burst.setAttribute("aria-hidden", "true");
+        if (anchor) {
+          const containerRect = container.getBoundingClientRect();
+          const anchorRect = anchor.getBoundingClientRect();
+          burst.style.inset = "auto";
+          burst.style.left = `${anchorRect.left - containerRect.left + anchorRect.width / 2}px`;
+          burst.style.top = `${anchorRect.top - containerRect.top + anchorRect.height / 2}px`;
+          burst.style.width = "0";
+          burst.style.height = "0";
+        }
+        for (let index = 0; index < pieceCount; index += 1) {
+          const piece = document.createElement("span");
+          piece.className = "holiday-confetti-piece";
+          piece.style.setProperty("--confetti-size", `${pieceSize}px`);
+          piece.style.setProperty("--confetti-duration", `${duration}ms`);
+          piece.style.setProperty(
+            "--confetti-color",
+            colors[index % colors.length],
+          );
+          piece.style.setProperty(
+            "--confetti-x",
+            `${Math.round((Math.random() - 0.5) * spreadX)}px`,
+          );
+          piece.style.setProperty(
+            "--confetti-y",
+            `${Math.round((Math.random() - 0.5) * spreadY)}px`,
+          );
+          piece.style.setProperty(
+            "--confetti-rotation",
+            `${Math.round(Math.random() * 720 - 360)}deg`,
+          );
+          piece.style.setProperty("--confetti-delay", `${index * delayStep}ms`);
+          burst.append(piece);
+        }
+        container.append(burst);
+        globalThis.setTimeout(
+          () => burst.remove(),
+          duration + pieceCount * delayStep + 100,
+        );
+      }
+
+      elements.skipButton.addEventListener("click", () => {
+        if (!state.currentId) return;
+        state.currentId = null;
+        elements.notice.textContent =
+          "This teammate's draw was recorded without a shift assignment.";
+        saveState();
+        render();
+      });
+
+      function resetRoundProgress() {
+        state.selectedIds = [];
+        state.round = 1;
+        state.currentId = null;
+      }
+
+      function persistAndRender() {
+        elements.notice.textContent = "";
+        saveState();
+        render();
+      }
+
+      function escapeMarkdownCell(value) {
+        return String(value)
+          .replaceAll("|", String.raw`\|`)
+          .replaceAll(/\r\n|\r|\n/g, "<br>");
+      }
+
+      function buildScheduleMarkdown() {
+        const headers = ["Monitoring type", "Date", ...SHIFT_LABELS];
+        const divider = headers.map(() => "---");
+        const rows = SCHEDULE_DAYS.map((date, dayIndex) => {
+          const shiftAssignments = SHIFT_LABELS.map((_, shiftIndex) => {
+            const slot =
+              state.schedule[dayIndex * SHIFT_LABELS.length + shiftIndex];
+            const primary = slot[0]?.name ?? "Unassigned";
+            const secondary = slot[1]?.name ?? "Unassigned";
+            return `Primary: ${primary}; Secondary: ${secondary}`;
+          });
+          return ["Eyes off Glass", date, ...shiftAssignments]
+            .map(escapeMarkdownCell)
+            .join(" | ");
+        });
+        return [
+          "# Holiday On-Call Schedule",
+          "",
+          `| ${headers.join(" | ")} |`,
+          `| ${divider.join(" | ")} |`,
+          ...rows.map((row) => `| ${row} |`),
+        ].join("\n");
+      }
+
+      function invalidateMarkdownExport() {
+        elements.markdownExport.hidden = true;
+        elements.markdownOutput.value = "";
+        elements.copyMarkdownButton.disabled = true;
+        elements.markdownStatus.textContent = "";
+      }
+
+      elements.generateMarkdownButton.addEventListener("click", () => {
+        elements.markdownOutput.value = buildScheduleMarkdown();
+        elements.markdownExport.hidden = false;
+        elements.copyMarkdownButton.disabled = false;
+        elements.markdownStatus.textContent = "Markdown generated.";
+      });
+
+      elements.copyMarkdownButton.addEventListener("click", async () => {
+        try {
+          await globalThis.navigator.clipboard.writeText(
+            elements.markdownOutput.value,
+          );
+          elements.markdownStatus.textContent = "Markdown copied.";
+        } catch {
+          elements.markdownOutput.focus();
+          elements.markdownOutput.select();
+          elements.markdownStatus.textContent =
+            "Clipboard unavailable. Markdown selected for copying.";
+        }
+      });
+
+      elements.resetCalendarRoundsButton.addEventListener("click", () => {
+        if (
+          !globalThis.confirm(
+            "Reset calendar assignments and rounds? The teammate list and pick totals will remain.",
+          )
+        ) {
+          return;
+        }
+        state.schedule = createEmptySchedule();
+        resetRoundProgress();
+        invalidateMarkdownExport();
+        persistAndRender();
+      });
+
+      elements.resetEmployeesButton.addEventListener("click", () => {
+        if (
+          !globalThis.confirm(
+            "Reset the teammate list? Existing calendar assignments will remain.",
+          )
+        ) {
+          return;
+        }
+        state.employees = [];
+        resetRoundProgress();
+        persistAndRender();
+      });
+
+      elements.resetBothButton.addEventListener("click", () => {
+        if (
+          !globalThis.confirm(
+            "Reset the teammate list, calendar assignments, and rounds?",
+          )
+        ) {
+          return;
+        }
+        state.employees = [];
+        state.schedule = createEmptySchedule();
+        resetRoundProgress();
+        invalidateMarkdownExport();
+        persistAndRender();
+      });
+
+      render();
+    </script>
+  </body>
+</html>
